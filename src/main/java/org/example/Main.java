@@ -1,22 +1,10 @@
 package org.example;
 
-import au.com.bytecode.opencsv.CSVReader;
-import au.com.bytecode.opencsv.CSVWriter;
-import com.aspose.cells.Workbook;
-import com.aspose.cells.Worksheet;
-import org.datavec.api.transform.TransformProcess;
-import org.datavec.api.transform.schema.Schema;
-
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.List;
-
 
 public class Main {
     public static void main(String[] args) throws Exception {
-      //  XlsxToCSV.convert("dataXLSX/F8/","dataCSV/F8/","f8_stat_",1,225);
-        //XlsxToCSV.convert("dataXLSX/F10/","dataCSV/F10/","f10_stat_",1,225);
-        RecordFormatter.formatData("dataCSV/F10/","dataCSV/F10_formatted","f10_stat_",1,1);
+        DataForNeuralNetwork.prepareData("dataXLSX/F8/","dataCSV/F8/","f8_stat_",1,225,true);
+        DataForNeuralNetwork.prepareData("dataXLSX/F10/","dataCSV/F10/","f10_stat_",1,225,true);
+
     }
 }
