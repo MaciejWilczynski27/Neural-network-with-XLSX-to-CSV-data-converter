@@ -15,6 +15,8 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-       // XlsxToCSV.convert("dataXLSX/F8/","dataCSV/F8/","f8_stat_",2,4);
+      //  XlsxToCSV.convert("dataXLSX/F8/","dataCSV/F8/","f8_stat_",1,225);
+        //XlsxToCSV.convert("dataXLSX/F10/","dataCSV/F10/","f10_stat_",1,225);
+        RecordFormatter.formatData("dataCSV/F10/","dataCSV/F10_formatted","f10_stat_",1,1);
     }
 }
