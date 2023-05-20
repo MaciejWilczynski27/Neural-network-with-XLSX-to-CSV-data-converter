@@ -5,6 +5,7 @@ import org.datavec.api.records.reader.impl.csv.CSVRecordReader;
 import org.datavec.api.split.FileSplit;
 import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator;
 import org.deeplearning4j.datasets.iterator.utilty.ListDataSetIterator;
+import org.deeplearning4j.nn.api.NeuralNetwork;
 import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.api.TrainingConfig;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
@@ -12,6 +13,7 @@ import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.Updater;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
+import org.deeplearning4j.nn.modelimport.keras.config.KerasModelConfiguration;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.nn.weights.WeightInit;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
@@ -28,64 +30,49 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-         DataForNeuralNetwork.prepareTrainingData("dataXLSX/F8/","dataCSV/F8/","f8_stat_",1,225);
-         DataForNeuralNetwork.prepareTrainingData("dataXLSX/F10/","dataCSV/F10/","f10_stat_",1,225);
+         //DataForNeuralNetwork.prepareTrainingData("dataXLSX/F8/","dataCSV/F8/","f8_stat_",1,225);
+       //  DataForNeuralNetwork.prepareTrainingData("dataXLSX/F10/","dataCSV/F10/","f10_stat_",1,225);
         //DataForNeuralNetwork.prepareDynamicData("dataXLSX/F8/","dataCSV/F8/","f8_1p");
-       // DataSet dataSet = NeuralNetworkManager.loadData("dataCSV/F8/f8_stat_1_trainingX.csv");
-       // DataNormalization dataNormalization = new NormalizerStandardize();
-       // dataNormalization.fit(dataSet);
-     //   dataNormalization.transform(dataSet);
+        DataSet dataSet = NeuralNetworkManager.loadData("dataCSV/F8/f8_3p_dynamicX.csv");
+        List<String> list1 = new ArrayList<>();
+        for(int i = 0; i < 256; i++) {
+            list1.add(String.valueOf(i));
+        }
+        dataSet.setLabelNames(list1);
+        //f8_1p_dynamicX.csv
+        DataNormalization dataNormalization = new NormalizerStandardize();
+        dataNormalization.fit(dataSet);
+        dataNormalization.transform(dataSet);
 
-        MultiLayerNetwork multiLayerNetwork = new MultiLayerNetwork(NeuralNetworkManager.getMultiLayerNetworkConfig());
+
+
+        MultiLayerNetwork multiLayerNetwork = MultiLayerNetwork.load(new File("multiLayerNetwork"),false);
+
+        /*               new MultiLayerNetwork(NeuralNetworkManager.getMultiLayerNetworkConfig());
         multiLayerNetwork.init();
         multiLayerNetwork.setListeners(new ScoreIterationListener(10));
-     //   for (int i =0; i < 100; i++) {
+        for (int i =0; i < 10; i++) {
             NeuralNetworkManager.trainNetwork(multiLayerNetwork, "dataCSV/F8/", "f8_stat", "trainingX.csv", 1, 225);
             NeuralNetworkManager.trainNetwork(multiLayerNetwork, "dataCSV/F8/", "f8_stat", "trainingY.csv", 1, 225);
-       // }
-        //  for (int i =0; i < 10;i++) {
-       //     multiLayerNetwork.fit(dataSet);
-       // }
-       // System.out.println(NeuralNetworkManager.evaluate(multiLayerNetwork,dataSet).stats());
-
-
-   /*     MultiLayerNetwork multiLayerNetwork = new MultiLayerNetwork(NeuralNetworkManager.getMultiLayerNetworkConfig());
-        multiLayerNetwork.init();
-        multiLayerNetwork.setListeners(new ScoreIterationListener(10));
-        INDArray indArray = new NDArray();
-
-
-     //   indArray.
-
-
-
-
-
-        RecordReader recordReader = new CSVRecordReader(0,',');
-        recordReader.initialize(new FileSplit(new File("dataCSV/F8/f8_stat_1.csv")));
-       // DataSetIterator dataSetIterator = new RecordReaderDataSetIterator(recordReader, 64, new int[]{4,5},1);
-        RecordReaderDataSetIterator dataSetIterator = new RecordReaderDataSetIterator(recordReader, 64, 4,1);
-        //System.out.println(multiLayerConfiguration.toJson());
-    multiLayerNetwork.evaluate(dataSetIterator);
-
-
-        for (int i = 0; i < 10; i++) {
-            multiLayerNetwork.fit(dataSetIterator);
-
-            // Evaluate model on training data
-           // dataSetIterator.reset();
-           // Evaluation eval = new Evaluation(2);
-          //  while (dataSetIterator.hasNext()) {
-           //     DataSet ds = dataSetIterator.next();
-               // eval.eval(ds.getLabels(), multiLayerNetwork.output(ds.getFeatures()));
-           // }
-          //  System.out.println("Epoch " + i + " - Loss: " + eval.stats() + " Accuracy: " + eval.accuracy());
-
+            NeuralNetworkManager.trainNetwork(multiLayerNetwork, "dataCSV/F10/", "f10_stat", "trainingX.csv", 1, 225);
+            NeuralNetworkManager.trainNetwork(multiLayerNetwork, "dataCSV/F10/", "f10_stat", "trainingY.csv", 1, 225);
         }
-*/
+        */
+
+    //    INDArray output = multiLayerNetwork.output(dataSet.getFeatures());
+       // List<String> list = multiLayerNetwork.predict(dataSet);
+
+       // list.forEach(s -> System.out.println(s));
+        //multiLayerNetwork.save(new File("multiLayerNetwork"));
+       // INDArray output = multiLayerNetwork.output(dataSet.getFeatures());
+       // System.out.println(output.toString());
+        System.out.println(NeuralNetworkManager.evaluate(multiLayerNetwork,dataSet).stats());
+
     }
 }

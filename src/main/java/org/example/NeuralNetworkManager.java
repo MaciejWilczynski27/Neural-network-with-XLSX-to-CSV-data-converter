@@ -19,6 +19,9 @@ import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import org.nd4j.linalg.dataset.api.preprocessor.DataNormalization;
 import org.nd4j.linalg.dataset.api.preprocessor.NormalizerStandardize;
+import org.nd4j.linalg.learning.config.AdaBelief;
+import org.nd4j.linalg.learning.config.Adam;
+import org.nd4j.linalg.learning.config.Nesterovs;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 import java.io.File;
@@ -28,25 +31,31 @@ public class NeuralNetworkManager {
 
     public static MultiLayerConfiguration getMultiLayerNetworkConfig() {
         return new NeuralNetConfiguration.Builder()
-                .seed(22)
+                .seed(300)
                 .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-                .updater(Updater.NESTEROVS)
+                .updater(new AdaBelief.Builder().learningRate(0.0001).build())
                 .list()
                 .layer(0, new DenseLayer.Builder()
                         .nIn(2)
-                        .nOut(225)
+                        .nOut(64)
                         .weightInit(WeightInit.XAVIER)
                         .activation(Activation.RELU)
                         .build())
                 .layer(1, new DenseLayer.Builder()
-                        .nIn(225)
-                        .nOut(450)
+                        .nIn(64)
+                        .nOut(128)
                         .weightInit(WeightInit.XAVIER)
                         .activation(Activation.RELU)
                         .build())
-                .layer(2, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-                        .nIn(450)
-                        .nOut(7501)
+                .layer(2, new DenseLayer.Builder()
+                        .nIn(128)
+                        .nOut(256)
+                        .weightInit(WeightInit.XAVIER)
+                        .activation(Activation.RELU)
+                        .build())
+                .layer(3, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+                        .nIn(256)
+                        .nOut(256)
                         .weightInit(WeightInit.XAVIER)
                         .activation(Activation.SOFTMAX)
                         .build())
@@ -56,13 +65,13 @@ public class NeuralNetworkManager {
         DataSet dataSet = new DataSet();
         RecordReader recordReader = new CSVRecordReader(0,',');
         recordReader.initialize(new FileSplit(new File(path)));
-        DataSetIterator dataSetIterator = new RecordReaderDataSetIterator(recordReader,64,2,7501);
+        DataSetIterator dataSetIterator = new RecordReaderDataSetIterator(recordReader,64,2,256);
         dataSet = dataSetIterator.next();
         return dataSet;
     }
     public static void trainNetwork(MultiLayerNetwork multiLayerNetwork,String sourceDirectory, String fileName,String fileNameEnding, int firstIndex, int lastIndex) throws IOException, InterruptedException {
         for (int i = firstIndex; i < lastIndex + 1; i++) {
-            System.out.println(i);
+            //System.out.println("index" + i);
             DataSet dataSet = NeuralNetworkManager.loadData(sourceDirectory + fileName + "_" + i + "_" +fileNameEnding);
             DataNormalization dataNormalization = new NormalizerStandardize();
             dataNormalization.fit(dataSet);
@@ -72,7 +81,7 @@ public class NeuralNetworkManager {
     }
     public static Evaluation evaluate(MultiLayerNetwork multiLayerNetwork, DataSet dataSet) {
         INDArray output = multiLayerNetwork.output(dataSet.getFeatures());
-        Evaluation evaluation = new Evaluation(7501);
+        Evaluation evaluation = new Evaluation(256);
         evaluation.eval(dataSet.getLabels(),output);
         return evaluation;
     }
