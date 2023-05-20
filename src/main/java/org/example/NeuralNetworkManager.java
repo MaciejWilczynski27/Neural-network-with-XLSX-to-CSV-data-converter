@@ -33,7 +33,7 @@ public class NeuralNetworkManager {
         return new NeuralNetConfiguration.Builder()
                 .seed(300)
                 .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
-                .updater(new AdaBelief.Builder().learningRate(0.0001).build())
+                .updater(new AdaBelief.Builder().learningRate(0.00001).build())
                 .list()
                 .layer(0, new DenseLayer.Builder()
                         .nIn(2)
@@ -62,11 +62,10 @@ public class NeuralNetworkManager {
                 .build();
     }
     public static DataSet loadData(String path) throws IOException, InterruptedException {
-        DataSet dataSet = new DataSet();
         RecordReader recordReader = new CSVRecordReader(0,',');
         recordReader.initialize(new FileSplit(new File(path)));
-        DataSetIterator dataSetIterator = new RecordReaderDataSetIterator(recordReader,64,2,256);
-        dataSet = dataSetIterator.next();
+        DataSetIterator dataSetIterator = new RecordReaderDataSetIterator(recordReader,1,2,256);
+        DataSet dataSet = dataSetIterator.next();
         return dataSet;
     }
     public static void trainNetwork(MultiLayerNetwork multiLayerNetwork,String sourceDirectory, String fileName,String fileNameEnding, int firstIndex, int lastIndex) throws IOException, InterruptedException {

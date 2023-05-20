@@ -53,6 +53,15 @@ public class Main {
 
 
         MultiLayerNetwork multiLayerNetwork = MultiLayerNetwork.load(new File("multiLayerNetwork"),false);
+        INDArray output = multiLayerNetwork.output(dataSet.getFeatures());
+         List<String> list = multiLayerNetwork.predict(dataSet);
+
+         list.forEach(s -> System.out.println(s));
+        System.out.println("List size " + list.size());
+       // System.out.println(output.columns());
+       // System.out.println(output.rows());
+
+        System.out.println(output.toString());
 
         /*               new MultiLayerNetwork(NeuralNetworkManager.getMultiLayerNetworkConfig());
         multiLayerNetwork.init();
@@ -66,9 +75,6 @@ public class Main {
         */
 
     //    INDArray output = multiLayerNetwork.output(dataSet.getFeatures());
-       // List<String> list = multiLayerNetwork.predict(dataSet);
-
-       // list.forEach(s -> System.out.println(s));
         //multiLayerNetwork.save(new File("multiLayerNetwork"));
        // INDArray output = multiLayerNetwork.output(dataSet.getFeatures());
        // System.out.println(output.toString());
