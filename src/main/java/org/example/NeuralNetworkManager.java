@@ -35,7 +35,7 @@ public class NeuralNetworkManager {
 
     public static MultiLayerConfiguration getMultiLayerNetworkConfig() {
         return new NeuralNetConfiguration.Builder()
-                .seed(300)
+                .seed(111)
                 .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
                 .updater(new AdaBelief.Builder().learningRate(0.00001).build())
                 .list()
@@ -124,11 +124,11 @@ public class NeuralNetworkManager {
         for(int i = 0; i < listX.size();i++) {
             for (int j = 0; j < listX.get(i).size(); j++ ) {
                 String [] row = new String[2];
-                row[0] =  String.format("%.3f",Double.valueOf(listX.get(i).get(j))/100 * Double.valueOf(measuredX.get(i*64 +j)[1]));
-                row[1] = String.format("%.3f",Double.valueOf(listY.get(i).get(j))/100 * Double.valueOf(measuredY.get(i*64 +j)[1]));
+                row[0] =  String.valueOf((int)(Double.valueOf(listX.get(i).get(j))/100 * Double.valueOf(measuredX.get(i*64 +j)[1])));
+                row[1] = String.valueOf((int)(Double.valueOf(listY.get(i).get(j))/100 * Double.valueOf(measuredY.get(i*64 +j)[1])));
                 solution.add(row);
             }
         }
-        DataForNeuralNetwork.saveCsvFile(solution,"gitarra.csv");
+        DataForNeuralNetwork.saveCsvFile(solution,"wyniki.csv");
     }
 }

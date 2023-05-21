@@ -44,8 +44,8 @@ public class Main {
         // DataForNeuralNetwork.prepareDynamicData("dataXLSX/F10/","dataCSV/F10/","f10_1p");
 
 
-        MultiLayerNetwork multiLayerNetworkX = //new MultiLayerNetwork(NeuralNetworkManager.getMultiLayerNetworkConfig());
-               MultiLayerNetwork.load(new File("multiLayerNetworkX"),false);
+        MultiLayerNetwork multiLayerNetworkX = MultiLayerNetwork.load(new File("multiLayerNetworkX"),false);
+        //new MultiLayerNetwork(NeuralNetworkManager.getMultiLayerNetworkConfig());
         /*
         multiLayerNetworkX.init();
         for (int i = 0; i < 10; i++) {
@@ -53,17 +53,18 @@ public class Main {
             NeuralNetworkManager.trainNetwork(multiLayerNetworkX, "dataCSV/F10/", "f10_stat", "trainingX.csv", 1, 225);
         }
         multiLayerNetworkX.save(new File("multiLayerNetworkX"));
-*/
-        MultiLayerNetwork multiLayerNetworkY =// new MultiLayerNetwork(NeuralNetworkManager.getMultiLayerNetworkConfig());
-             MultiLayerNetwork.load(new File("multiLayerNetworkY"),false);
-        /*multiLayerNetworkY.init();
+        */
+        MultiLayerNetwork multiLayerNetworkY = MultiLayerNetwork.load(new File("multiLayerNetworkY"),false);
+
+        //new MultiLayerNetwork(NeuralNetworkManager.getMultiLayerNetworkConfig());
+        /*  multiLayerNetworkY.init();
         for (int i = 0; i < 10; i++) {
             NeuralNetworkManager.trainNetwork(multiLayerNetworkY, "dataCSV/F8/", "f8_stat", "trainingY.csv", 1, 225);
             NeuralNetworkManager.trainNetwork(multiLayerNetworkY, "dataCSV/F10/", "f10_stat", "trainingY.csv", 1, 225);
         }
         multiLayerNetworkY.save(new File("multiLayerNetworkY"));
-*/
-        NeuralNetworkManager.correctData(multiLayerNetworkX,multiLayerNetworkY,"dataCSV/F8/f8_1p_dynamic");
+        */
+        NeuralNetworkManager.correctData(multiLayerNetworkX,multiLayerNetworkY,"dataCSV/F10/f10_1p_dynamic");
 
 
     }
