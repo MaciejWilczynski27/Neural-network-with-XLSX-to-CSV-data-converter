@@ -67,7 +67,6 @@ public class DataForNeuralNetwork {
             }
             row[2] = String.valueOf(Math.round(Double.valueOf(row[2]) /  Double.valueOf(row[1]) *100));
             if(Integer.valueOf(row[2]) < 0 || Integer.valueOf(row[2]) > 255) row[2] = String.valueOf(100);
-            //System.out.println(row[2]);
         }
         saveCsvFile(rows, path);
     }
@@ -93,14 +92,14 @@ public class DataForNeuralNetwork {
 
     }
 
-    private static List<String[]> readCsvFile(String filePath) throws IOException {
+    public static List<String[]> readCsvFile(String filePath) throws IOException {
         CSVReader csvReader = new CSVReader(new FileReader(filePath));
         List<String[]> rows = csvReader.readAll();
         csvReader.close();
         return rows;
     }
 
-    private static void saveCsvFile(List<String[]> rows, String filePath) throws IOException {
+    public static void saveCsvFile(List<String[]> rows, String filePath) throws IOException {
         CSVWriter csvWriter = new CSVWriter(new FileWriter(filePath));
         csvWriter.writeAll(rows);
         csvWriter.close();

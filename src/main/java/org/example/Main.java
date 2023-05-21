@@ -33,52 +33,38 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Vector;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-         //DataForNeuralNetwork.prepareTrainingData("dataXLSX/F8/","dataCSV/F8/","f8_stat_",1,225);
-       //  DataForNeuralNetwork.prepareTrainingData("dataXLSX/F10/","dataCSV/F10/","f10_stat_",1,225);
-        //DataForNeuralNetwork.prepareDynamicData("dataXLSX/F8/","dataCSV/F8/","f8_1p");
-        DataSet dataSet = NeuralNetworkManager.loadData("dataCSV/F8/f8_3p_dynamicX.csv");
-        List<String> list1 = new ArrayList<>();
-        for(int i = 0; i < 256; i++) {
-            list1.add(String.valueOf(i));
+        // DataForNeuralNetwork.prepareTrainingData("dataXLSX/F8/","dataCSV/F8/","f8_stat_",1,225);
+        // DataForNeuralNetwork.prepareTrainingData("dataXLSX/F10/","dataCSV/F10/","f10_stat_",1,225);
+        // DataForNeuralNetwork.prepareDynamicData("dataXLSX/F8/","dataCSV/F8/","f8_1p");
+        // DataForNeuralNetwork.prepareDynamicData("dataXLSX/F10/","dataCSV/F10/","f10_1p");
+
+
+        MultiLayerNetwork multiLayerNetworkX = //new MultiLayerNetwork(NeuralNetworkManager.getMultiLayerNetworkConfig());
+               MultiLayerNetwork.load(new File("multiLayerNetworkX"),false);
+        /*
+        multiLayerNetworkX.init();
+        for (int i = 0; i < 10; i++) {
+            NeuralNetworkManager.trainNetwork(multiLayerNetworkX, "dataCSV/F8/", "f8_stat", "trainingX.csv", 1, 225);
+            NeuralNetworkManager.trainNetwork(multiLayerNetworkX, "dataCSV/F10/", "f10_stat", "trainingX.csv", 1, 225);
         }
-        dataSet.setLabelNames(list1);
-        //f8_1p_dynamicX.csv
-        DataNormalization dataNormalization = new NormalizerStandardize();
-        dataNormalization.fit(dataSet);
-        dataNormalization.transform(dataSet);
-
-
-
-        MultiLayerNetwork multiLayerNetwork = MultiLayerNetwork.load(new File("multiLayerNetwork"),false);
-        INDArray output = multiLayerNetwork.output(dataSet.getFeatures());
-         List<String> list = multiLayerNetwork.predict(dataSet);
-
-         list.forEach(s -> System.out.println(s));
-        System.out.println("List size " + list.size());
-       // System.out.println(output.columns());
-       // System.out.println(output.rows());
-
-        System.out.println(output.toString());
-
-        /*               new MultiLayerNetwork(NeuralNetworkManager.getMultiLayerNetworkConfig());
-        multiLayerNetwork.init();
-        multiLayerNetwork.setListeners(new ScoreIterationListener(10));
-        for (int i =0; i < 10; i++) {
-            NeuralNetworkManager.trainNetwork(multiLayerNetwork, "dataCSV/F8/", "f8_stat", "trainingX.csv", 1, 225);
-            NeuralNetworkManager.trainNetwork(multiLayerNetwork, "dataCSV/F8/", "f8_stat", "trainingY.csv", 1, 225);
-            NeuralNetworkManager.trainNetwork(multiLayerNetwork, "dataCSV/F10/", "f10_stat", "trainingX.csv", 1, 225);
-            NeuralNetworkManager.trainNetwork(multiLayerNetwork, "dataCSV/F10/", "f10_stat", "trainingY.csv", 1, 225);
+        multiLayerNetworkX.save(new File("multiLayerNetworkX"));
+*/
+        MultiLayerNetwork multiLayerNetworkY =// new MultiLayerNetwork(NeuralNetworkManager.getMultiLayerNetworkConfig());
+             MultiLayerNetwork.load(new File("multiLayerNetworkY"),false);
+        /*multiLayerNetworkY.init();
+        for (int i = 0; i < 10; i++) {
+            NeuralNetworkManager.trainNetwork(multiLayerNetworkY, "dataCSV/F8/", "f8_stat", "trainingY.csv", 1, 225);
+            NeuralNetworkManager.trainNetwork(multiLayerNetworkY, "dataCSV/F10/", "f10_stat", "trainingY.csv", 1, 225);
         }
-        */
+        multiLayerNetworkY.save(new File("multiLayerNetworkY"));
+*/
+        NeuralNetworkManager.correctData(multiLayerNetworkX,multiLayerNetworkY,"dataCSV/F8/f8_1p_dynamic");
 
-    //    INDArray output = multiLayerNetwork.output(dataSet.getFeatures());
-        //multiLayerNetwork.save(new File("multiLayerNetwork"));
-       // INDArray output = multiLayerNetwork.output(dataSet.getFeatures());
-       // System.out.println(output.toString());
-        System.out.println(NeuralNetworkManager.evaluate(multiLayerNetwork,dataSet).stats());
 
     }
 }

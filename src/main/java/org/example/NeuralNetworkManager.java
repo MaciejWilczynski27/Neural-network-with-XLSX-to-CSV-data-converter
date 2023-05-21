@@ -26,6 +26,10 @@ import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class NeuralNetworkManager {
 
@@ -61,21 +65,22 @@ public class NeuralNetworkManager {
                         .build())
                 .build();
     }
-    public static DataSet loadData(String path) throws IOException, InterruptedException {
+    public static DataSetIterator loadData(String path) throws IOException, InterruptedException {
         RecordReader recordReader = new CSVRecordReader(0,',');
         recordReader.initialize(new FileSplit(new File(path)));
-        DataSetIterator dataSetIterator = new RecordReaderDataSetIterator(recordReader,1,2,256);
-        DataSet dataSet = dataSetIterator.next();
-        return dataSet;
+
+        return new RecordReaderDataSetIterator(recordReader,64,2,256);
     }
     public static void trainNetwork(MultiLayerNetwork multiLayerNetwork,String sourceDirectory, String fileName,String fileNameEnding, int firstIndex, int lastIndex) throws IOException, InterruptedException {
         for (int i = firstIndex; i < lastIndex + 1; i++) {
-            //System.out.println("index" + i);
-            DataSet dataSet = NeuralNetworkManager.loadData(sourceDirectory + fileName + "_" + i + "_" +fileNameEnding);
-            DataNormalization dataNormalization = new NormalizerStandardize();
-            dataNormalization.fit(dataSet);
-            dataNormalization.transform(dataSet);
-            multiLayerNetwork.fit(dataSet);
+            DataSetIterator dataSetIterator = loadData(sourceDirectory + fileName + "_" + i + "_" +fileNameEnding);
+            while (dataSetIterator.hasNext()) {
+                DataSet dataSet = dataSetIterator.next();
+                DataNormalization dataNormalization = new NormalizerStandardize();
+                dataNormalization.fit(dataSet);
+                dataNormalization.transform(dataSet);
+                multiLayerNetwork.fit(dataSet);
+            }
         }
     }
     public static Evaluation evaluate(MultiLayerNetwork multiLayerNetwork, DataSet dataSet) {
@@ -83,5 +88,47 @@ public class NeuralNetworkManager {
         Evaluation evaluation = new Evaluation(256);
         evaluation.eval(dataSet.getLabels(),output);
         return evaluation;
+    }
+    public static void correctData(MultiLayerNetwork multiLayerNetworkX,MultiLayerNetwork multiLayerNetworkY, String path) throws IOException, InterruptedException {
+        List<String> list1 = new ArrayList<>();
+        for(int i = 0; i < 256; i++) {
+            list1.add(String.valueOf(i));
+        }
+        DataSetIterator dataSetIteratorX = NeuralNetworkManager.loadData(path + "X.csv");
+        DataSetIterator dataSetIteratorY = NeuralNetworkManager.loadData(path + "Y.csv");
+        AtomicInteger atomicInteger = new AtomicInteger(0);
+        ArrayList<List<String>> listX = new ArrayList<>();
+        ArrayList<List<String>> listY = new ArrayList<>();
+        while (dataSetIteratorX.hasNext()) {
+            DataSet dataSet = dataSetIteratorX.next();
+            dataSet.setLabelNames(list1);
+            DataNormalization dataNormalization = new NormalizerStandardize();
+            dataNormalization.fit(dataSet);
+            dataNormalization.transform(dataSet);
+            List<String> list = multiLayerNetworkX.predict(dataSet);
+            listX.add(list);
+            list.forEach(s -> atomicInteger.incrementAndGet());
+        }
+        while (dataSetIteratorY.hasNext()) {
+            DataSet dataSet = dataSetIteratorY.next();
+            dataSet.setLabelNames(list1);
+            DataNormalization dataNormalization = new NormalizerStandardize();
+            dataNormalization.fit(dataSet);
+            dataNormalization.transform(dataSet);
+            List<String> list = multiLayerNetworkY.predict(dataSet);
+            listY.add(list);
+        }
+        List<String[]> measuredX = DataForNeuralNetwork.readCsvFile(path + "X.csv");
+        List<String[]> measuredY = DataForNeuralNetwork.readCsvFile(path + "Y.csv");
+        List<String[]> solution = new Vector<>(atomicInteger.get());
+        for(int i = 0; i < listX.size();i++) {
+            for (int j = 0; j < listX.get(i).size(); j++ ) {
+                String [] row = new String[2];
+                row[0] =  String.format("%.3f",Double.valueOf(listX.get(i).get(j))/100 * Double.valueOf(measuredX.get(i*64 +j)[1]));
+                row[1] = String.format("%.3f",Double.valueOf(listY.get(i).get(j))/100 * Double.valueOf(measuredY.get(i*64 +j)[1]));
+                solution.add(row);
+            }
+        }
+        DataForNeuralNetwork.saveCsvFile(solution,"gitarra.csv");
     }
 }
